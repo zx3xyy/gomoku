@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="theme-color" content="#121213" />
+  <meta name="description" content="Gomoku (Five in a Row) — play vs AI or a friend. Works on any phone." />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="Gomoku" />
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect x='4' y='4' width='92' height='92' rx='12' fill='%23dcb35c'/%3E%3Cg stroke='%235b4a2f' stroke-width='3'%3E%3Cpath d='M20 4v92M40 4v92M60 4v92M80 4v92M4 20h92M4 40h92M4 60h92M4 80h92'/%3E%3C/g%3E%3Cg%3E%3Ccircle cx='30' cy='30' r='8' fill='%231a1a1b'/%3E%3Ccircle cx='50' cy='30' r='8' fill='%231a1a1b'/%3E%3Ccircle cx='70' cy='30' r='8' fill='%231a1a1b'/%3E%3Ccircle cx='40' cy='50' r='8' fill='%23ffffff'/%3E%3Ccircle cx='60' cy='50' r='8' fill='%23ffffff'/%3E%3C/g%3E%3C/svg%3E" />
+  <title>Gomoku</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div id="app">
+    <header>
+      <div class="header-side">
+        <button id="btn-new" class="text-btn">New</button>
+      </div>
+      <h1>Gomoku</h1>
+      <div class="header-side right">
+        <button id="btn-sound" class="icon-btn" aria-label="Toggle sound" aria-pressed="true">
+          <svg id="icon-sound-on" viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.5 8.5a5 5 0 0 1 0 7M19 5a9 9 0 0 1 0 14"/></svg>
+          <svg id="icon-sound-off" viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:none"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><line x1="23" y1="9" x2="17" y2="15"/><line x1="17" y1="9" x2="23" y2="15"/></svg>
+        </button>
+        <button id="btn-stats" class="icon-btn" aria-label="Statistics and help">
+          <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+        </button>
+        <button id="btn-theme" class="icon-btn" aria-label="Toggle light and dark mode">
+          <svg id="icon-moon" viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+          <svg id="icon-sun" viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:none"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
+        </button>
+      </div>
+    </header>
+
+    <div id="statusbar">
+      <span id="mode-label">vs AI</span>
+      <span id="turn-label"><span id="turn-dot" class="black"></span><span id="turn-text">Your turn</span></span>
+      <span id="move-count">Move 0</span>
+    </div>
+
+    <main>
+      <div id="toast-container" aria-live="polite"></div>
+      <div id="board-wrap">
+        <canvas id="board" role="application" aria-label="Gomoku board. Tap an intersection to place a stone."></canvas>
+      </div>
+
+      <div id="controls">
+        <button id="btn-undo" class="tool" aria-label="Undo">
+          <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 14 4 9 9 4"/><path d="M20 20v-7a4 4 0 0 0-4-4H4"/></svg>
+          <span>Undo</span>
+        </button>
+        <button id="btn-giveup" class="tool" aria-label="Resign this game">
+          <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/><line x1="4" y1="22" x2="4" y2="15"/></svg>
+          <span>Resign</span>
+        </button>
+        <button id="btn-switch" class="tool" aria-label="Switch sides with the AI">
+          <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="17 1 21 5 17 9"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/><polyline points="7 23 3 19 7 15"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/></svg>
+          <span>Sides</span>
+        </button>
+      </div>
+      <p id="hint-line">Get 5 in a row to win. Black moves first.</p>
+    </main>
+
+    <div id="modal-overlay" class="hidden">
+      <div id="modal" role="dialog" aria-modal="true">
+        <button id="modal-close" class="icon-btn" aria-label="Close">&times;</button>
+        <div id="modal-content"></div>
+      </div>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
